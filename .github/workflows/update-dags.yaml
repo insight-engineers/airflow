@@ -10,18 +10,13 @@ on:
 
 jobs:
   update-and-deploy:
-    runs-on: centerm
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - id: ssh
-        uses: invi5H/ssh-action@v1
-        with:
-          SSH_HOST: ${{ secrets.CENTERM_HOST }}
-          SSH_PORT: ${{ secrets.CENTERM_PORT }}
-          SSH_USER: ${{ secrets.CENTERM_USER }}
-          SSH_KEY: ${{ secrets.CENTERM_KEY }}
-          
-      - run: ssh ${{ steps.ssh.outputs.SERVER }} bash -c "cd ${{ secrets.CENTERM_AIRFLOW_DIR }} && git pull --rebase"
+      - name: SSH and Pull Latest Changes
+        run: |
+          sshpass -p "${{ secrets.CENTERM_PASS }}" ssh -o StrictHostKeyChecking=no ${{ secrets.CENTERM_USER }}@${{ secrets.CENTERM_HOST }} -p ${{ secrets.CENTERM_PORT }} \
+          "cd ${{ secrets.CENTERM_AIRFLOW_DIR }} && git pull --rebase"
