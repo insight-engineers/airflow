@@ -7,7 +7,7 @@ on:
 
 jobs:
   update-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: centerm
 
     steps:
       - name: Checkout Repository
