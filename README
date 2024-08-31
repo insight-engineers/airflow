@@ -1,0 +1,21 @@
+This repo is used for storing dags, to use: update dags folder and push it -> CI will run for you.
+Run the whole airflow stack using: docker compose up -d
+Run this command to update connections: make update-connections
+Add/Modify/Remove the connections by create a connections.json file
+
+```json
+{
+  "your-conn-id-1": {
+    "conn_type": "ssh",
+    "description": "optional",
+    "login": "required",
+    "password": "required",
+    "host": "xxx.xxx.xxx.xxx",
+    "port": 22,
+    "schema": "optional",
+    "extra": "optional"
+  },
+}
+```
+
+Note that you should clear all connections in Admin -> Connections before run update-connections

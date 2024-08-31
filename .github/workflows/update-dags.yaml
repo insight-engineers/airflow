@@ -1,0 +1,23 @@
+name: Update DAGs and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: SSH and Pull Latest Changes
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.CENTERM_HOST }}
+          username: ${{ secrets.CENTERM_USER }}
+          password: ${{ secrets.CENTERM_PASS }}
+          port: ${{ secrets.CENTERM_PORT }}
+          script: cd ${{ secrets.CENTERM_AIRFLOW_DIR }} && git pull --rebase
