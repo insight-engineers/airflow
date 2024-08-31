@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/update-dags.yaml
+      - dags/**
 
 jobs:
   update-and-deploy:
@@ -13,11 +16,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: SSH and Pull Latest Changes
-        uses: appleboy/ssh-action@v1.0.3
+      - id: ssh
+        uses: invi5H/ssh-action@v1
         with:
-          host: ${{ secrets.CENTERM_HOST }}
-          username: ${{ secrets.CENTERM_USER }}
-          password: ${{ secrets.CENTERM_PASS }}
-          port: ${{ secrets.CENTERM_PORT }}
-          script: cd ${{ secrets.CENTERM_AIRFLOW_DIR }} && git pull --rebase
+          SSH_HOST: ${{ secrets.CENTERM_HOST }}
+          SSH_PORT: ${{ secrets.CENTERM_PORT }}
+          SSH_USER: ${{ secrets.CENTERM_USER }}
+          SSH_KEY: ${{ secrets.CENTERM_KEY }}
+          
+      - run: ssh ${{ steps.ssh.outputs.SERVER }} bash -c "cd ${{ secrets.CENTERM_AIRFLOW_DIR }} && git pull --rebase"
