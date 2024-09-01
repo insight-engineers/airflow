@@ -10,11 +10,25 @@ on:
 
 jobs:
   update-and-deploy:
-    runs-on: centerm
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Install Netbird
+        run: curl -fsSL https://pkgs.netbird.io/install.sh | sh
+
+      - name: Connect to Netbird
+        run: |
+          sudo netbird up --setup-key=${{ secrets.NETBIRD_SETUP_KEY }}
+
+      - name: Wait for Netbird to connect
+        run: |
+            while [ -z "$(sudo netbird status | grep 'Management: Connected')" ]; do
+            echo "Waiting for Netbird to connect..."
+            sleep 5
+            done
 
       - name: SSH and Pull Latest Changes
         run: |
