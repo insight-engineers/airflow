@@ -29,7 +29,7 @@ x-airflow-common:
 
 services:
   postgres:
-    image: postgres:13
+    image: postgres:13-alpine
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -43,6 +43,22 @@ services:
     restart: always
     networks:
       - airflow-net
+
+  pgadmin:
+    image: dpage/pgadmin4:8.11.0
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-Ubuntu@1}
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
+    ports:
+      - "5050:80"
+    restart: always
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - airflow-net        
 
   airflow-webserver:
     <<: *airflow-common
@@ -153,6 +169,7 @@ services:
 
 volumes:
   postgres-db-volume:
+  pgadmin-data:
 
 networks:
   airflow-net:
