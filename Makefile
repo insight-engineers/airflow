@@ -1,3 +1,3 @@
 update-connections:
-	docker cp connections.json airflow-airflow-scheduler-1:/opt/airflow/connections.json
-	docker exec -it airflow-airflow-scheduler-1 airflow connections import /opt/airflow/connections.json
+	docker cp connections.json centerm_airflow-scheduler:/opt/airflow/connections.json
+	docker exec -it centerm_airflow-scheduler airflow connections import /opt/airflow/connections.json
