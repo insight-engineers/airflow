@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - .github/workflows/**
       - dags/**
 
 jobs:
@@ -24,13 +25,18 @@ jobs:
         run: |
           sudo netbird up --setup-key ${{ secrets.NETBIRD_SETUP_KEY }}
 
-      - name: Wait for Netbird to connect
+      - name: Wait for Host to be Reachable
         run: |
-            while [ -z "$(sudo netbird status | grep 'Management: Connected')" ]; do
-            echo "Waiting for Netbird to connect..."
+          end=$((SECONDS+60))
+          while ! ping -c 1 ${{ secrets.CENTERM_HOST }} &> /dev/null; do
+            if [ $SECONDS -ge $end ]; then
+              echo "Timeout reached: host ${{ secrets.CENTERM_HOST }} still unreachable."
+              exit 1
+            fi
+            echo "Waiting for host ${{ secrets.CENTERM_HOST }} to be reachable..."
             sleep 5
-            done
-
+          done
+          
       - name: SSH and Pull Latest Changes
         run: |
           sshpass -p "${{ secrets.CENTERM_PASS }}" ssh -o StrictHostKeyChecking=no ${{ secrets.CENTERM_USER }}@${{ secrets.CENTERM_HOST }} -p ${{ secrets.CENTERM_PORT }} \
