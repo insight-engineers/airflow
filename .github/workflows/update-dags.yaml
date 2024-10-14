@@ -37,24 +37,5 @@ jobs:
           "cd ${{ secrets.CENTERM_AIRFLOW_DIR }} && git pull --rebase"
           
       - name: Disconnect from Netbird
-        run: netbird down
-          
-      - name: Fetch Peers
-        id: fetch_peers
-        run: |
-          response=$(curl -s -X GET https://api.netbird.io/api/peers \
-          -H 'Accept: application/json' \
-          -H "Authorization: Token ${{ secrets.NETBIRD_TOKEN }}")
-          echo "$response" > peers.json
-          echo "::set-output name=peers::$(cat peers.json)"
-  
-      - name: Delete Non-VN Peers
         if: always()
-        run: |
-          peers=$(cat peers.json)
-          for id in $(echo "$peers" | jq -r '.[] | select(.country_code != "VN") | .id'); do
-            echo "Deleting peer with id: $id"
-            curl -X DELETE https://api.netbird.io/api/peers/$id \
-            -H "Authorization: Token ${{ secrets.NETBIRD_TOKEN }}"
-          done
-          rm peers.json
+        run: netbird down
